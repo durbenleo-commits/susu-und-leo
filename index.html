@@ -391,7 +391,11 @@
     <p class="lead" id="deadlineText"></p>
 
     <div class="card">
-      <form id="rsvp" novalidate>
+      <form id="rsvp" name="rsvp" method="POST" data-netlify="true" netlify-honeypot="website" novalidate>
+        <!-- Netlify erkennt das Formular beim Veröffentlichen; diese Felder füllt das Skript beim Absenden -->
+        <input type="hidden" name="personen">
+        <input type="hidden" name="gaeste">
+        <input type="hidden" name="subject">
         <fieldset>
           <legend>Eure Antwort</legend>
           <div class="choices">
@@ -497,11 +501,11 @@ const CONFIG = {
     ["15:30", "Sektempfang", "mit Kuchen und Kaffee"],
     ["18:30", "Abendessen", "gemeinsam an langen Tafeln"],
     ["21:00", "Party", "bis in die Nacht"]
-  ],
-  // Web-App-URL aus Google Apps Script (siehe ANLEITUNG.md).
-  // Leer = Testmodus, Antworten werden dann nicht verschickt.
-  rsvpUrl: ""
+  ]
 };
+
+// Antworten gehen an Netlify Forms. Lokal geöffnet (Datei oder localhost) gibt es dort nichts zu empfangen.
+const TESTMODUS = location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 
 /* ---------- Texte einsetzen ---------- */
 const $ = (id) => document.getElementById(id);
@@ -697,7 +701,8 @@ window.addEventListener("resize", () => {
 });
 
 /* ---------- Zu- / Absage ---------- */
-const STORE_KEY = "hochzeit-rsvp";
+// Neuer Name, damit Antworten aus dem früheren Testmodus nicht mehr angezeigt werden
+const STORE_KEY = "hochzeit-rsvp-v2";
 const form = $("rsvp");
 const yesFields = $("yesFields");
 const guestsBox = $("guests");
@@ -842,9 +847,16 @@ form.addEventListener("submit", async (e) => {
   btn.disabled = true;
   btn.textContent = "Wird gesendet …";
   try {
-    if (CONFIG.rsvpUrl) {
-      // Google Apps Script nimmt Formulardaten entgegen; die Antwort ist hier nicht lesbar (no-cors)
-      await fetch(CONFIG.rsvpUrl, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) });
+    if (!TESTMODUS) {
+      const subject = data.antwort === "Zusage"
+        ? `Zusage: ${data.name} (${data.personen} ${data.personen === "1" ? "Person" : "Personen"})`
+        : `Absage: ${data.name}`;
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ "form-name": "rsvp", subject, website: "", ...data }).toString()
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
     }
     store("set", { ...data, count });
     showThanks(data);
@@ -858,7 +870,7 @@ form.addEventListener("submit", async (e) => {
 
 /* Wer schon geantwortet hat, sieht beim nächsten Besuch seine Antwort */
 (function restore() {
-  if (!CONFIG.rsvpUrl) $("demoNote").hidden = false;
+  if (TESTMODUS) $("demoNote").hidden = false;
   const saved = store("get");
   if (!saved) { renderGuests(); return; }
   $("name").value = saved.name || "";
