@@ -391,11 +391,7 @@
     <p class="lead" id="deadlineText"></p>
 
     <div class="card">
-      <form id="rsvp" name="rsvp" method="POST" data-netlify="true" netlify-honeypot="website" novalidate>
-        <!-- Netlify erkennt das Formular beim Veröffentlichen; diese Felder füllt das Skript beim Absenden -->
-        <input type="hidden" name="personen">
-        <input type="hidden" name="gaeste">
-        <input type="hidden" name="subject">
+      <form id="rsvp" novalidate>
         <fieldset>
           <legend>Eure Antwort</legend>
           <div class="choices">
@@ -501,10 +497,13 @@ const CONFIG = {
     ["15:30", "Sektempfang", "mit Kuchen und Kaffee"],
     ["18:30", "Abendessen", "gemeinsam an langen Tafeln"],
     ["21:00", "Party", "bis in die Nacht"]
-  ]
+  ],
+  // Jede Antwort geht über FormSubmit (formsubmit.co) als E-Mail an diese Adresse.
+  // Nach der Aktivierung kann hier statt der Adresse der Alias von FormSubmit stehen.
+  antwortAn: ["durben.leo", "gmail.com"].join("@")
 };
 
-// Antworten gehen an Netlify Forms. Lokal geöffnet (Datei oder localhost) gibt es dort nichts zu empfangen.
+// Lokal geöffnet (Datei oder localhost) wird nichts verschickt.
 const TESTMODUS = location.protocol === "file:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 
 /* ---------- Texte einsetzen ---------- */
@@ -851,12 +850,27 @@ form.addEventListener("submit", async (e) => {
       const subject = data.antwort === "Zusage"
         ? `Zusage: ${data.name} (${data.personen} ${data.personen === "1" ? "Person" : "Personen"})`
         : `Absage: ${data.name}`;
-      const res = await fetch("/", {
+      const mail = {
+        _subject: subject,
+        _template: "table",
+        _captcha: "false",
+        Antwort: data.antwort,
+        Name: data.name,
+        "E-Mail": data.email || "–",
+        Personen: data.personen,
+        "Gäste & Menü": data.gaeste || "–",
+        Allergien: data.allergien || "–",
+        Liedwunsch: data.lied || "–",
+        Nachricht: data.nachricht || "–"
+      };
+      if (data.email) mail._replyto = data.email;
+      const res = await fetch(`https://formsubmit.co/ajax/${CONFIG.antwortAn}`, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ "form-name": "rsvp", subject, website: "", ...data }).toString()
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(mail)
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || String(out.success) !== "true") throw new Error(out.message || `HTTP ${res.status}`);
     }
     store("set", { ...data, count });
     showThanks(data);
