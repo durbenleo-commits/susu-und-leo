@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Su Su &amp; Leo heiraten</title>
+<meta name="description" content="Einladung zur Hochzeit – bitte sagt uns, ob ihr dabei seid.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400&family=Pinyon+Script&display=swap">
+<style>
+  /* Layout: eine Einladungskarte als Seite – Blumen-Hero, dann ruhige, zentrierte Abschnitte auf Papier */
+  :root {
+    --paper: #FBF8F2;
+    --paper-deep: #F3ECE1;
+    --ink: #3D3934;
+    --ink-soft: #7A726A;
+    --blush: #C4877C;
+    --blush-soft: #F0DCD5;
+    --sage: #86997F;
+    --line: #D9CFC1;
+    --error: #A8473A;
+
+    --script: "Pinyon Script", "Great Vibes", "Snell Roundhand", cursive;
+    --serif: "Cormorant Garamond", "Garamond", Georgia, serif;
+    --caps: "Jost", "Helvetica Neue", Arial, sans-serif;
+
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  [hidden] { display: none !important; }
+
+  .caps {
+    font-family: var(--caps);
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding-block: 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    text-align: center;
+  }
+  .hero canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.9;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 48% 46% at 50% 50%, rgba(251, 248, 242, 0.95) 30%, rgba(251, 248, 242, 0) 80%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    width: min(100%, 560px);
+  }
+  .hero .caps { color: var(--ink-soft); }
+  .names {
+    margin: 18px 0 8px;
+    font-family: var(--script);
+    font-weight: 400;
+    font-size: clamp(4.2rem, 19vw, 8rem);
+    line-height: 0.95;
+    display: grid;
+    justify-items: center;
+  }
+  .names .amp {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.32em;
+    color: var(--blush);
+    line-height: 1.4;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: min(100%, 300px);
+    color: var(--sage);
+    margin-block: 14px;
+  }
+  .divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--ink-soft);
+    opacity: 0.45;
+  }
+  .divider svg { width: 18px; height: 18px; flex: none; }
+  .date { font-size: clamp(1.5rem, 6vw, 1.9rem); margin: 0; }
+  .place { font-style: italic; color: var(--ink-soft); margin: 0; font-size: 1.25rem; }
+
+  .countdown {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    width: min(100%, 420px);
+    margin-block: 34px 38px;
+  }
+  .countdown div { display: grid; gap: 2px; }
+  .countdown b {
+    font-weight: 400;
+    font-size: clamp(1.9rem, 9vw, 2.8rem);
+    line-height: 1;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .countdown span { font-size: 0.6rem; letter-spacing: 0.24em; color: var(--ink-soft); }
+  .countdown.done { display: block; font-size: 1.4rem; font-style: italic; }
+  .countdown[hidden] + .btn { margin-top: 36px; }
+
+  .btn {
+    display: inline-block;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    padding: 17px 34px;
+    font-family: var(--caps);
+    font-weight: 400;
+    font-size: 0.74rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.25s, color 0.25s;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--blush);
+    outline-offset: 3px;
+  }
+  .btn[disabled] { opacity: 0.55; cursor: progress; }
+
+  .reveal { animation: rise 1.2s ease-out both; }
+  .reveal:nth-child(2) { animation-delay: 0.15s; }
+  .reveal:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes rise { from { opacity: 0.001; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
+
+  /* ---------- Abschnitte ---------- */
+  section.block {
+    padding-block: 88px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  section.block.tinted { background: var(--paper-deep); }
+  .wrap { width: min(100%, 620px); margin-inline: auto; }
+  .eyebrow { color: var(--sage); text-align: center; margin: 0 0 6px; }
+  h2 {
+    font-family: var(--script);
+    font-weight: 400;
+    font-size: clamp(2.8rem, 11vw, 3.8rem);
+    line-height: 1.1;
+    text-align: center;
+    margin: 0 0 28px;
+    text-wrap: balance;
+  }
+  .lead { text-align: center; color: var(--ink-soft); margin: 0 auto 40px; max-width: 34em; text-wrap: balance; }
+
+  .photo-block { padding-block: 72px 24px; }
+  .portrait { width: min(100%, 420px); margin: 0 auto; display: grid; justify-items: center; gap: 32px; }
+  .arch { position: relative; width: 100%; max-width: 100%; aspect-ratio: 4 / 5; }
+  .arch::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    border: 1px solid var(--line);
+    border-radius: 999px 999px 6px 6px;
+  }
+  .arch img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 999px 999px 3px 3px;
+  }
+  .portrait figcaption { text-align: center; font-style: italic; color: var(--ink-soft); max-width: 26em; text-wrap: balance; }
+
+  .schedule { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .schedule li {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 20px;
+    padding-block: 18px;
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .schedule li:last-child { border-bottom: 1px solid var(--line); }
+  .schedule time { color: var(--blush); letter-spacing: 0.2em; font-size: 0.8rem; }
+  .schedule strong { font-weight: 500; font-size: 1.3rem; display: block; line-height: 1.3; }
+  .schedule small { color: var(--ink-soft); font-style: italic; font-size: 1.05rem; }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 32px;
+    text-align: center;
+    margin-top: 48px;
+  }
+  .facts h3 { margin: 0 0 6px; color: var(--sage); }
+  .facts p { margin: 0; }
+  .facts a { color: var(--ink); text-underline-offset: 4px; text-decoration-color: var(--blush); }
+
+  /* ---------- Formular ---------- */
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: clamp(24px, 6vw, 48px);
+  }
+  form { display: grid; gap: 28px; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  legend, label.field-label {
+    display: block;
+    margin-bottom: 10px;
+    font-family: var(--caps);
+    font-weight: 400;
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .choice { position: relative; }
+  .choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .choice span {
+    display: grid;
+    gap: 2px;
+    padding: 18px 16px;
+    border: 1px solid var(--line);
+    text-align: center;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  .choice span b { font-weight: 500; font-size: 1.25rem; }
+  .choice span i { color: var(--ink-soft); font-size: 0.98rem; }
+  .choice input:checked + span { border-color: var(--ink); background: var(--blush-soft); }
+  .choice input:focus-visible + span { outline: 2px solid var(--blush); outline-offset: 3px; }
+
+  input[type="text"], input[type="email"], select, textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 1.15rem;
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    padding: 8px 2px;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-bottom-color: var(--ink); outline: none; }
+  textarea { resize: vertical; min-height: 3.2em; }
+  select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%);
+    background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 28px;
+  }
+  .hint { font-size: 0.98rem; color: var(--ink-soft); font-style: italic; margin: 6px 0 0; }
+
+  .stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); }
+  .stepper button {
+    width: 44px; height: 44px;
+    border: 0; background: transparent; color: var(--ink);
+    font: inherit; font-size: 1.4rem; cursor: pointer;
+  }
+  .stepper button:disabled { color: var(--line); cursor: default; }
+  .stepper output { min-width: 2.5ch; text-align: center; font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+
+  .guests { display: grid; gap: 14px; margin-top: 18px; }
+  .guest { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: end; }
+  .guest .who { padding: 8px 2px; border-bottom: 1px solid transparent; font-style: italic; color: var(--ink-soft); overflow-wrap: anywhere; }
+  @media (max-width: 460px) { .guest { grid-template-columns: 1fr; gap: 6px; } }
+
+  .error-msg { color: var(--error); font-size: 1rem; margin: 0; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .actions { display: grid; justify-items: center; gap: 12px; }
+  .demo-note {
+    font-family: var(--caps); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--blush); text-align: center; margin: 0;
+  }
+
+  .thanks { text-align: center; display: grid; gap: 14px; justify-items: center; }
+  .thanks .big { font-family: var(--script); font-size: clamp(2.8rem, 11vw, 3.8rem); line-height: 1.1; margin: 0; }
+  .thanks p { margin: 0; max-width: 30em; }
+  .linklike {
+    background: none; border: 0; padding: 4px; font: inherit; color: var(--ink-soft);
+    text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--blush); cursor: pointer;
+  }
+
+  footer {
+    text-align: center;
+    padding-block: 64px 80px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    color: var(--ink-soft);
+  }
+  footer .mono { font-family: var(--script); font-size: 2.6rem; color: var(--ink); line-height: 1; margin: 0 0 8px; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================================
+     HIER ANPASSEN: alle Texte der Seite stehen in CONFIG (ganz unten im <script>).
+     ====================================================================== -->
+
+<header class="hero" id="start">
+  <canvas id="florals" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="caps reveal">Wir heiraten</p>
+    <h1 class="names reveal"><span id="name1"></span><span class="amp">&amp;</span><span id="name2"></span></h1>
+    <div class="reveal" style="display:grid;justify-items:center;gap:6px;width:100%">
+      <div class="divider"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.1 1.6-1.9 3.1-3.1 5.3-3.1 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
+      <p class="date" id="dateText"></p>
+      <p class="place" id="placeText"></p>
+      <div class="countdown" id="countdown" aria-live="off">
+        <div><b id="cdD">–</b><span class="caps">Tage</span></div>
+        <div><b id="cdH">–</b><span class="caps">Stunden</span></div>
+        <div><b id="cdM">–</b><span class="caps">Minuten</span></div>
+        <div><b id="cdS">–</b><span class="caps">Sekunden</span></div>
+      </div>
+      <a class="btn" href="#antwort">Zu- oder absagen</a>
+    </div>
+  </div>
+</header>
+
+<section class="block photo-block" id="wir">
+  <figure class="portrait">
+    <div class="arch">
+      <img id="coupleImg" src="foto-su-su-leo.jpg" width="680" height="850" alt="Su Su und Leo auf einer Bank vor einem Bogenfenster voller Bougainvillea">
+    </div>
+    <figcaption>Wir können es kaum erwarten, diesen Tag mit euch zu feiern.</figcaption>
+  </figure>
+</section>
+
+<section class="block" id="ablauf">
+  <div class="wrap">
+    <p class="caps eyebrow">Der Tag</p>
+    <h2>So feiern wir</h2>
+    <ol class="schedule" id="schedule"></ol>
+    <div class="facts">
+      <div>
+        <h3 class="caps">Ort</h3>
+        <p id="venueText"></p>
+        <p><a id="mapLink" href="#" target="_blank" rel="noopener">Route anzeigen</a></p>
+      </div>
+      <div>
+        <h3 class="caps">Dresscode</h3>
+        <p id="dressText"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block tinted" id="antwort">
+  <div class="wrap">
+    <p class="caps eyebrow">Zu- oder Absage</p>
+    <h2>Seid ihr dabei?</h2>
+    <p class="lead" id="deadlineText"></p>
+
+    <div class="card">
+      <form id="rsvp" novalidate>
+        <fieldset>
+          <legend>Eure Antwort</legend>
+          <div class="choices">
+            <label class="choice">
+              <input type="radio" name="antwort" id="antwortJa" value="Zusage">
+              <span><b>Ja, wir kommen</b><i>Wir feiern mit euch</i></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="antwort" id="antwortNein" value="Absage">
+              <span><b>Leider nicht</b><i>Wir sind in Gedanken dabei</i></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <label class="field-label" for="name">Vor- und Nachname</label>
+          <input type="text" id="name" name="name" autocomplete="name" required>
+        </div>
+
+        <div>
+          <label class="field-label" for="email">E-Mail <span style="text-transform:none;letter-spacing:0">(freiwillig, für Rückfragen)</span></label>
+          <input type="email" id="email" name="email" autocomplete="email">
+        </div>
+
+        <div id="yesFields" hidden>
+          <div style="display:grid;gap:28px">
+            <div>
+              <span class="field-label" id="countLabel">Wie viele Personen kommen insgesamt?</span>
+              <div class="stepper" role="group" aria-labelledby="countLabel">
+                <button type="button" id="minus" aria-label="Eine Person weniger">−</button>
+                <output id="count" aria-live="polite">1</output>
+                <button type="button" id="plus" aria-label="Eine Person mehr">+</button>
+              </div>
+              <div class="guests" id="guests"></div>
+            </div>
+
+            <div>
+              <label class="field-label" for="allergien">Allergien oder Unverträglichkeiten</label>
+              <input type="text" id="allergien" name="allergien" placeholder="z. B. Nüsse, Laktose">
+            </div>
+
+            <div>
+              <label class="field-label" for="lied">Euer Liedwunsch für die Party</label>
+              <input type="text" id="lied" name="lied" placeholder="Interpret – Titel">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="field-label" for="nachricht">Eine Nachricht an uns</label>
+          <textarea id="nachricht" name="nachricht" rows="3"></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <p class="error-msg" id="formError" role="alert" hidden></p>
+
+        <div class="actions">
+          <button class="btn" type="submit" id="submitBtn">Antwort senden</button>
+          <p class="demo-note" id="demoNote" hidden>Testmodus: Antworten werden nur in diesem Browser gespeichert</p>
+        </div>
+      </form>
+
+      <div class="thanks" id="thanks" hidden>
+        <p class="big" id="thanksTitle"></p>
+        <p id="thanksText"></p>
+        <button type="button" class="linklike" id="editBtn">Antwort ändern</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="mono" id="monogram"></p>
+  <p class="caps">Wir freuen uns auf euch</p>
+</footer>
+
+<script>
+/* =========================================================================
+   CONFIG – hier passt ihr alles an
+   ========================================================================= */
+const CONFIG = {
+  name1: "Su Su",
+  name2: "Leo",
+  // Beginn der Feier in Ortszeit, Format JJJJ-MM-TTTHH:MM:SS, z. B. "2027-06-12T14:00:00".
+  // Leer = noch kein Datum, der Countdown bleibt ausgeblendet.
+  start: "",
+  datumText: "Datum folgt",
+  ortKurz: "Burg Burgbrohl",
+  ortLang: "Burg Burgbrohl im Brohltal",
+  kartenLink: "https://www.google.com/maps/search/?api=1&query=Burg+Burgbrohl",
+  dresscode: "Festlich elegant",
+  // Antwortfrist, z. B. "1. April 2027". Leer = "so bald wie möglich".
+  antwortBis: "",
+  maxPersonen: 4,
+  menue: ["Fleisch", "Fisch", "Vegetarisch", "Vegan", "Kinderteller"],
+  // Ablauf (Beispiel – bitte anpassen)
+  ablauf: [
+    ["14:00", "Freie Trauung", "wir sagen Ja"],
+    ["15:30", "Sektempfang", "mit Kuchen und Kaffee"],
+    ["18:30", "Abendessen", "gemeinsam an langen Tafeln"],
+    ["21:00", "Party", "bis in die Nacht"]
+  ],
+  // Web-App-URL aus Google Apps Script (siehe ANLEITUNG.md).
+  // Leer = Testmodus, Antworten werden dann nicht verschickt.
+  rsvpUrl: ""
+};
+
+/* ---------- Texte einsetzen ---------- */
+const $ = (id) => document.getElementById(id);
+$("name1").textContent = CONFIG.name1;
+$("name2").textContent = CONFIG.name2;
+$("dateText").textContent = CONFIG.datumText;
+$("placeText").textContent = CONFIG.ortKurz;
+$("venueText").textContent = CONFIG.ortLang;
+$("mapLink").href = CONFIG.kartenLink;
+$("dressText").textContent = CONFIG.dresscode;
+$("deadlineText").textContent = CONFIG.antwortBis
+  ? `Bitte gebt uns bis zum ${CONFIG.antwortBis} Bescheid. Eine Antwort pro Haushalt genügt.`
+  : "Bitte gebt uns so bald wie möglich Bescheid. Eine Antwort pro Haushalt genügt.";
+$("coupleImg").alt = `${CONFIG.name1} und ${CONFIG.name2} auf einer Bank vor einem Bogenfenster voller Bougainvillea`;
+$("monogram").textContent =`${CONFIG.name1[0]} & ${CONFIG.name2[0]}`;
+document.title = `${CONFIG.name1} & ${CONFIG.name2} heiraten`;
+
+const schedule = $("schedule");
+for (const [zeit, titel, info] of CONFIG.ablauf) {
+  const li = document.createElement("li");
+  const t = document.createElement("time");
+  t.className = "caps";
+  t.textContent = zeit;
+  const d = document.createElement("div");
+  const s = document.createElement("strong");
+  s.textContent = titel;
+  const sm = document.createElement("small");
+  sm.textContent = info;
+  d.append(s, sm);
+  li.append(t, d);
+  schedule.append(li);
+}
+
+/* ---------- Countdown ---------- */
+const target = new Date(CONFIG.start).getTime();
+const pad = (n) => String(n).padStart(2, "0");
+function tick() {
+  const diff = target - Date.now();
+  if (!CONFIG.start || Number.isNaN(target)) {
+    $("countdown").hidden = true;
+    return;
+  }
+  if (diff <= 0) {
+    const cd = $("countdown");
+    cd.className = "countdown done";
+    cd.textContent = "Wir sind verheiratet!";
+    return;
+  }
+  const s = Math.floor(diff / 1000);
+  $("cdD").textContent = Math.floor(s / 86400);
+  $("cdH").textContent = pad(Math.floor(s / 3600) % 24);
+  $("cdM").textContent = pad(Math.floor(s / 60) % 60);
+  $("cdS").textContent = pad(s % 60);
+  setTimeout(tick, 1000 - (Date.now() % 1000));
+}
+tick();
+
+/* ---------- Aquarell-Blumen ---------- */
+function seeded(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function rose(ctx, x, y, r, rnd, [h, s, l]) {
+  const layers = 6;
+  for (let k = 0; k < layers; k++) {
+    const t = k / (layers - 1);
+    const rr = r * (1 - t * 0.78);
+    const n = 6 - Math.round(t * 2) + (k % 2);
+    const off = rnd() * Math.PI * 2;
+    for (let i = 0; i < n; i++) {
+      const a = off + (i / n) * Math.PI * 2 + (rnd() - 0.5) * 0.4;
+      const d = rr * 0.26;
+      ctx.save();
+      ctx.translate(x + Math.cos(a) * d, y + Math.sin(a) * d);
+      ctx.rotate(a + Math.PI / 2);
+      const pw = rr * (0.8 + rnd() * 0.2);
+      const ph = rr * (0.62 + rnd() * 0.15);
+      const g = ctx.createRadialGradient(0, ph * 0.2, 0, 0, -ph * 0.2, pw * 0.85);
+      g.addColorStop(0, `hsla(${h},${s}%,${Math.min(97, l + 8)}%,0.14)`);
+      g.addColorStop(0.6, `hsla(${h},${s}%,${l}%,0.38)`);
+      g.addColorStop(1, `hsla(${h},${s + 6}%,${l - 14}%,0.55)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(-pw * 0.5, 0);
+      ctx.bezierCurveTo(-pw * 0.58, -ph * 0.95, pw * 0.58, -ph * 0.95, pw * 0.5, 0);
+      ctx.bezierCurveTo(pw * 0.3, ph * 0.32, -pw * 0.3, ph * 0.32, -pw * 0.5, 0);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.lineCap = "round";
+  ctx.strokeStyle = `hsla(${h},${s}%,${l - 24}%,0.28)`;
+  ctx.lineWidth = Math.max(1, r * 0.022);
+  for (let i = 0; i < 4; i++) {
+    const a0 = rnd() * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(x, y, r * (0.07 + i * 0.055), a0, a0 + 2 + rnd() * 1.5);
+    ctx.stroke();
+  }
+}
+
+function leaf(ctx, x, y, len, ang, rnd, [h, s, l]) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(ang);
+  const w = len * (0.26 + rnd() * 0.08);
+  const g = ctx.createLinearGradient(0, -w * 0.6, len, w * 0.6);
+  g.addColorStop(0, `hsla(${h},${s}%,${l - 8}%,0.42)`);
+  g.addColorStop(1, `hsla(${h},${s}%,${l + 6}%,0.22)`);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.quadraticCurveTo(len * 0.45, -w, len, 0);
+  ctx.quadraticCurveTo(len * 0.45, w, 0, 0);
+  ctx.fill();
+  ctx.strokeStyle = `hsla(${h},${s}%,${l - 18}%,0.25)`;
+  ctx.lineWidth = Math.max(0.8, len * 0.012);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.quadraticCurveTo(len * 0.5, -w * 0.08, len * 0.92, 0);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function sprig(ctx, x, y, len, ang, rnd, tone) {
+  const bend = (rnd() - 0.5) * 0.6;
+  const pts = [];
+  for (let i = 0; i <= 20; i++) {
+    const t = i / 20;
+    const a = ang + bend * t;
+    const px = i === 0 ? x : pts[i - 1][0] + Math.cos(a) * len / 20;
+    const py = i === 0 ? y : pts[i - 1][1] + Math.sin(a) * len / 20;
+    pts.push([px, py, a]);
+  }
+  ctx.strokeStyle = `hsla(${tone[0]},${tone[1]}%,${tone[2] - 15}%,0.35)`;
+  ctx.lineWidth = Math.max(1, len * 0.008);
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (const p of pts) ctx.lineTo(p[0], p[1]);
+  ctx.stroke();
+  for (let i = 3; i <= 20; i += 2) {
+    const [px, py, a] = pts[i];
+    const side = i % 4 === 1 ? 1 : -1;
+    const ll = len * (0.26 - (i / 20) * 0.12) * (0.85 + rnd() * 0.3);
+    leaf(ctx, px, py, ll, a + side * (0.65 + rnd() * 0.3), rnd, tone);
+  }
+  leaf(ctx, pts[20][0], pts[20][1], len * 0.13, pts[20][2], rnd, tone);
+}
+
+function paintFlorals() {
+  const canvas = $("florals");
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  const u = Math.min(Math.max(w, h * 0.62), 900);
+  const rnd = seeded(20270612);
+
+  const blush = [8, 52, 86], peach = [18, 58, 87], pale = [352, 38, 89];
+  const sage = [105, 14, 62], eucalyptus = [150, 10, 66];
+
+  // Laub zuerst, damit die Rosen darüber liegen
+  sprig(ctx, -u * 0.02, h * 0.2, u * 0.55, -0.35, rnd, sage);
+  sprig(ctx, w * 0.22, -u * 0.02, u * 0.42, 0.9, rnd, eucalyptus);
+  sprig(ctx, w * 1.02, h * 0.04, u * 0.5, 2.5, rnd, sage);
+  sprig(ctx, w * 1.01, h * 0.62, u * 0.45, 3.5, rnd, eucalyptus);
+  sprig(ctx, -u * 0.02, h * 0.72, u * 0.5, -0.15, rnd, eucalyptus);
+  sprig(ctx, w * 0.25, h * 1.02, u * 0.4, -1.1, rnd, sage);
+  sprig(ctx, w * 0.78, h * 1.02, u * 0.42, -2.0, rnd, sage);
+
+  rose(ctx, w * 0.06, h * 0.07, u * 0.24, rnd, blush);
+  rose(ctx, w * 0.3, -u * 0.03, u * 0.12, rnd, pale);
+  rose(ctx, w * 0.96, h * 0.13, u * 0.18, rnd, peach);
+  rose(ctx, -u * 0.04, h * 0.5, u * 0.14, rnd, pale);
+  rose(ctx, w * 0.1, h * 0.94, u * 0.22, rnd, blush);
+  rose(ctx, w * 0.36, h * 1.02, u * 0.1, rnd, peach);
+  rose(ctx, w * 0.93, h * 0.86, u * 0.21, rnd, blush);
+  rose(ctx, w * 1.02, h * 0.55, u * 0.1, rnd, pale);
+}
+paintFlorals();
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(paintFlorals, 150);
+});
+
+/* ---------- Zu- / Absage ---------- */
+const STORE_KEY = "hochzeit-rsvp";
+const form = $("rsvp");
+const yesFields = $("yesFields");
+const guestsBox = $("guests");
+let count = 1;
+
+function store(op, value) {
+  try {
+    if (op === "get") return JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    localStorage.setItem(STORE_KEY, JSON.stringify(value));
+  } catch { return null; }
+}
+
+function menuSelect(id, selected) {
+  const sel = document.createElement("select");
+  sel.id = id;
+  sel.setAttribute("aria-label", "Menüwahl");
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = "Menü wählen";
+  sel.append(first);
+  for (const m of CONFIG.menue) {
+    const o = document.createElement("option");
+    o.value = m;
+    o.textContent = m;
+    if (m === selected) o.selected = true;
+    sel.append(o);
+  }
+  return sel;
+}
+
+function renderGuests() {
+  // Eingaben beim Neuzeichnen behalten
+  const prev = [...guestsBox.querySelectorAll(".guest")].map((row) => ({
+    name: row.querySelector("input")?.value || "",
+    menue: row.querySelector("select").value
+  }));
+  guestsBox.textContent = "";
+  for (let i = 0; i < count; i++) {
+    const row = document.createElement("div");
+    row.className = "guest";
+    if (i === 0) {
+      const who = document.createElement("div");
+      who.className = "who";
+      who.textContent = $("name").value.trim() || "Du";
+      row.append(who);
+    } else {
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.id = `gast${i}`;
+      inp.placeholder = `Name Person ${i + 1}`;
+      inp.setAttribute("aria-label", `Name Person ${i + 1}`);
+      inp.value = prev[i]?.name || "";
+      row.append(inp);
+    }
+    row.append(menuSelect(`menue${i}`, prev[i]?.menue));
+    guestsBox.append(row);
+  }
+  $("count").textContent = count;
+  $("minus").disabled = count <= 1;
+  $("plus").disabled = count >= CONFIG.maxPersonen;
+}
+
+$("minus").addEventListener("click", () => { if (count > 1) { count--; renderGuests(); } });
+$("plus").addEventListener("click", () => { if (count < CONFIG.maxPersonen) { count++; renderGuests(); } });
+$("name").addEventListener("input", () => {
+  const who = guestsBox.querySelector(".who");
+  if (who) who.textContent = $("name").value.trim() || "Du";
+});
+form.addEventListener("change", (e) => {
+  if (e.target.name === "antwort") {
+    yesFields.hidden = e.target.value !== "Zusage";
+    hideError();
+  }
+});
+
+function showError(msg, focusEl) {
+  const el = $("formError");
+  el.textContent = msg;
+  el.hidden = false;
+  if (focusEl) focusEl.focus();
+}
+function hideError() { $("formError").hidden = true; }
+
+function collect() {
+  const antwort = form.querySelector('input[name="antwort"]:checked')?.value || "";
+  const name = $("name").value.trim();
+  const data = {
+    antwort,
+    name,
+    email: $("email").value.trim(),
+    personen: antwort === "Zusage" ? String(count) : "0",
+    gaeste: "",
+    allergien: "",
+    lied: "",
+    nachricht: $("nachricht").value.trim()
+  };
+  if (antwort === "Zusage") {
+    const rows = [...guestsBox.querySelectorAll(".guest")];
+    data.gaeste = rows.map((row, i) => {
+      const n = i === 0 ? name : (row.querySelector("input").value.trim() || `Person ${i + 1}`);
+      const m = row.querySelector("select").value || "keine Angabe";
+      return `${n} (${m})`;
+    }).join("; ");
+    data.allergien = $("allergien").value.trim();
+    data.lied = $("lied").value.trim();
+  }
+  return data;
+}
+
+function showThanks(data) {
+  form.hidden = true;
+  $("thanks").hidden = false;
+  if (data.antwort === "Zusage") {
+    $("thanksTitle").textContent = "Wie schön!";
+    $("thanksText").textContent = data.personen === "1"
+      ? `Danke, ${data.name}. Wir freuen uns riesig, dass du dabei bist.`
+      : `Danke, ${data.name}. Wir freuen uns riesig auf euch ${data.personen}.`;
+  } else {
+    $("thanksTitle").textContent = "Schade";
+    $("thanksText").textContent = `Danke für deine Nachricht, ${data.name}. Wir denken an dich und feiern ein Stück für dich mit.`;
+  }
+}
+
+$("editBtn").addEventListener("click", () => {
+  $("thanks").hidden = true;
+  form.hidden = false;
+  $("name").focus();
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  hideError();
+
+  // Spam-Schutz: unsichtbares Feld, das nur Bots ausfüllen
+  if ($("website").value) { showThanks({ antwort: "Zusage", name: "", personen: "1" }); return; }
+
+  const data = collect();
+  if (!data.antwort) return showError("Bitte wählt aus, ob ihr kommt.", $("antwortJa"));
+  if (!data.name) return showError("Bitte tragt euren Namen ein.", $("name"));
+
+  const btn = $("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Wird gesendet …";
+  try {
+    if (CONFIG.rsvpUrl) {
+      // Google Apps Script nimmt Formulardaten entgegen; die Antwort ist hier nicht lesbar (no-cors)
+      await fetch(CONFIG.rsvpUrl, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) });
+    }
+    store("set", { ...data, count });
+    showThanks(data);
+  } catch {
+    showError("Die Antwort konnte nicht gesendet werden. Prüft eure Internetverbindung und versucht es noch einmal.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Antwort senden";
+  }
+});
+
+/* Wer schon geantwortet hat, sieht beim nächsten Besuch seine Antwort */
+(function restore() {
+  if (!CONFIG.rsvpUrl) $("demoNote").hidden = false;
+  const saved = store("get");
+  if (!saved) { renderGuests(); return; }
+  $("name").value = saved.name || "";
+  $("email").value = saved.email || "";
+  $("nachricht").value = saved.nachricht || "";
+  $("allergien").value = saved.allergien || "";
+  $("lied").value = saved.lied || "";
+  const radio = saved.antwort === "Zusage" ? $("antwortJa") : saved.antwort === "Absage" ? $("antwortNein") : null;
+  if (radio) radio.checked = true;
+  yesFields.hidden = saved.antwort !== "Zusage";
+  count = Math.min(Math.max(1, saved.count || 1), CONFIG.maxPersonen);
+  renderGuests();
+  showThanks(saved);
+})();
+</script>
+</body>
+</html>
