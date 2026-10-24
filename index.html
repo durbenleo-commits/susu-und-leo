@@ -239,7 +239,7 @@
   }
   form { display: grid; gap: 28px; }
   fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
-  legend, label.field-label {
+  legend, .field-label {
     display: block;
     margin-bottom: 10px;
     font-family: var(--caps);
@@ -301,7 +301,8 @@
   .guests { display: grid; gap: 14px; margin-top: 18px; }
   .guest { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: end; }
   .guest .who { padding: 8px 2px; border-bottom: 1px solid transparent; font-style: italic; color: var(--ink-soft); overflow-wrap: anywhere; }
-  @media (max-width: 460px) { .guest { grid-template-columns: 1fr; gap: 6px; } }
+  .guest.kid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr) minmax(0, 1fr); }
+  @media (max-width: 460px) { .guest, .guest.kid { grid-template-columns: 1fr; gap: 6px; } .guest.kid { padding-top: 10px; } }
 
   .error-msg { color: var(--error); font-size: 1rem; margin: 0; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
@@ -419,13 +420,24 @@
         <div id="yesFields" hidden>
           <div style="display:grid;gap:28px">
             <div>
-              <span class="field-label" id="countLabel">Wie viele Personen kommen insgesamt?</span>
+              <span class="field-label" id="countLabel">Wie viele Erwachsene kommen (mit dir)?</span>
               <div class="stepper" role="group" aria-labelledby="countLabel">
-                <button type="button" id="minus" aria-label="Eine Person weniger">−</button>
+                <button type="button" id="minus" aria-label="Einen Erwachsenen weniger">−</button>
                 <output id="count" aria-live="polite">1</output>
-                <button type="button" id="plus" aria-label="Eine Person mehr">+</button>
+                <button type="button" id="plus" aria-label="Einen Erwachsenen mehr">+</button>
               </div>
               <div class="guests" id="guests"></div>
+            </div>
+
+            <div>
+              <span class="field-label" id="kidsLabel">Bringt ihr Kinder mit?</span>
+              <div class="stepper" role="group" aria-labelledby="kidsLabel">
+                <button type="button" id="kidMinus" aria-label="Ein Kind weniger">−</button>
+                <output id="kidCount" aria-live="polite">0</output>
+                <button type="button" id="kidPlus" aria-label="Ein Kind mehr">+</button>
+              </div>
+              <p class="hint" id="kidsHint">Mit Alter, damit wir Kinderstühle und Kinderteller planen können.</p>
+              <div class="guests" id="kids"></div>
             </div>
 
             <div>
@@ -483,13 +495,14 @@ const CONFIG = {
   // Leer = noch kein Datum, der Countdown bleibt ausgeblendet.
   start: "",
   datumText: "Datum folgt",
-  ortKurz: "Burg Burgbrohl",
-  ortLang: "Burg Burgbrohl im Brohltal",
-  kartenLink: "https://www.google.com/maps/search/?api=1&query=Burg+Burgbrohl",
+  ortKurz: "Schloss Burgbrohl",
+  ortLang: "Schloss Burgbrohl im Brohltal",
+  kartenLink: "https://maps.app.goo.gl/47x6w2EA1wMB5S5UA",
   dresscode: "Festlich elegant",
   // Antwortfrist, z. B. "1. April 2027". Leer = "so bald wie möglich".
   antwortBis: "",
-  maxPersonen: 4,
+  maxPersonen: 4, // Erwachsene pro Antwort
+  maxKinder: 6,
   menue: ["Fleisch", "Fisch", "Vegetarisch", "Vegan", "Kinderteller"],
   // Ablauf (Beispiel – bitte anpassen)
   ablauf: [
@@ -709,7 +722,9 @@ const STORE_KEY = "hochzeit-rsvp-v3";
 const form = $("rsvp");
 const yesFields = $("yesFields");
 const guestsBox = $("guests");
+const kidsBox = $("kids");
 let count = 1;
+let kids = 0;
 
 function store(op, value) {
   try {
@@ -768,8 +783,60 @@ function renderGuests() {
   $("plus").disabled = count >= CONFIG.maxPersonen;
 }
 
+const ALTER = ["unter 1 Jahr", "1 Jahr", ...Array.from({ length: 16 }, (_, i) => `${i + 2} Jahre`)];
+
+function ageSelect(id, selected) {
+  const sel = document.createElement("select");
+  sel.id = id;
+  sel.setAttribute("aria-label", "Alter");
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = "Alter";
+  sel.append(first);
+  for (const a of ALTER) {
+    const o = document.createElement("option");
+    o.value = a;
+    o.textContent = a;
+    if (a === selected) o.selected = true;
+    sel.append(o);
+  }
+  return sel;
+}
+
+function renderKids() {
+  const prev = [...kidsBox.querySelectorAll(".guest")].map((row) => ({
+    name: row.querySelector("input").value,
+    alter: row.querySelector(".age").value,
+    menue: row.querySelector(".menu").value
+  }));
+  kidsBox.textContent = "";
+  const kinderteller = CONFIG.menue.find((m) => /kind/i.test(m));
+  for (let i = 0; i < kids; i++) {
+    const row = document.createElement("div");
+    row.className = "guest kid";
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.id = `kind${i}`;
+    inp.placeholder = `Name Kind ${i + 1}`;
+    inp.setAttribute("aria-label", `Name Kind ${i + 1}`);
+    inp.value = prev[i]?.name || "";
+    const age = ageSelect(`kindAlter${i}`, prev[i]?.alter);
+    age.classList.add("age");
+    const menu = menuSelect(`kindMenue${i}`, prev[i] ? prev[i].menue : kinderteller);
+    menu.classList.add("menu");
+    row.append(inp, age, menu);
+    kidsBox.append(row);
+  }
+  $("kidCount").textContent = kids;
+  $("kidMinus").disabled = kids <= 0;
+  $("kidPlus").disabled = kids >= CONFIG.maxKinder;
+  $("kidsHint").hidden = kids === 0;
+}
+
 $("minus").addEventListener("click", () => { if (count > 1) { count--; renderGuests(); } });
 $("plus").addEventListener("click", () => { if (count < CONFIG.maxPersonen) { count++; renderGuests(); } });
+$("kidMinus").addEventListener("click", () => { if (kids > 0) { kids--; renderKids(); } });
+$("kidPlus").addEventListener("click", () => { if (kids < CONFIG.maxKinder) { kids++; renderKids(); } });
 $("name").addEventListener("input", () => {
   const who = guestsBox.querySelector(".who");
   if (who) who.textContent = $("name").value.trim() || "Du";
@@ -796,7 +863,9 @@ function collect() {
     antwort,
     name,
     email: $("email").value.trim(),
-    personen: antwort === "Zusage" ? String(count) : "0",
+    personen: antwort === "Zusage" ? String(count + kids) : "0",
+    erwachsene: antwort === "Zusage" ? String(count) : "0",
+    kinder: antwort === "Zusage" ? String(kids) : "0",
     gaeste: "",
     allergien: "",
     lied: "",
@@ -804,11 +873,19 @@ function collect() {
   };
   if (antwort === "Zusage") {
     const rows = [...guestsBox.querySelectorAll(".guest")];
-    data.gaeste = rows.map((row, i) => {
+    const erwachsene = rows.map((row, i) => {
       const n = i === 0 ? name : (row.querySelector("input").value.trim() || `Person ${i + 1}`);
       const m = row.querySelector("select").value || "keine Angabe";
       return `${n} (${m})`;
-    }).join("; ");
+    });
+    // Kinder: "Name (Kind, 6 Jahre, Kinderteller)" – so erkennt die Tabelle sie
+    const kinder = [...kidsBox.querySelectorAll(".guest")].map((row, i) => {
+      const n = row.querySelector("input").value.trim() || `Kind ${i + 1}`;
+      const a = row.querySelector(".age").value || "Alter ?";
+      const m = row.querySelector(".menu").value || "keine Angabe";
+      return `${n} (Kind, ${a}, ${m})`;
+    });
+    data.gaeste = erwachsene.concat(kinder).join("; ");
     data.allergien = $("allergien").value.trim();
     data.lied = $("lied").value.trim();
   }
@@ -865,6 +942,7 @@ form.addEventListener("submit", async (e) => {
         Name: data.name,
         "E-Mail": data.email || "–",
         Personen: data.personen,
+        "Davon Kinder": data.kinder,
         "Gäste & Menü": data.gaeste || "–",
         Allergien: data.allergien || "–",
         Liedwunsch: data.lied || "–",
@@ -880,7 +958,7 @@ form.addEventListener("submit", async (e) => {
       const out = await res.json().catch(() => ({}));
       if (!res.ok || String(out.success) !== "true") throw new Error(out.message || `HTTP ${res.status}`);
     }
-    store("set", { ...data, count });
+    store("set", { ...data, count, kids });
     showThanks(data);
   } catch {
     showError("Die Antwort konnte nicht gesendet werden. Prüft eure Internetverbindung und versucht es noch einmal.");
@@ -894,7 +972,7 @@ form.addEventListener("submit", async (e) => {
 (function restore() {
   if (TESTMODUS) $("demoNote").hidden = false;
   const saved = store("get");
-  if (!saved) { renderGuests(); return; }
+  if (!saved) { renderGuests(); renderKids(); return; }
   $("name").value = saved.name || "";
   $("email").value = saved.email || "";
   $("nachricht").value = saved.nachricht || "";
@@ -904,7 +982,9 @@ form.addEventListener("submit", async (e) => {
   if (radio) radio.checked = true;
   yesFields.hidden = saved.antwort !== "Zusage";
   count = Math.min(Math.max(1, saved.count || 1), CONFIG.maxPersonen);
+  kids = Math.min(Math.max(0, saved.kids || 0), CONFIG.maxKinder);
   renderGuests();
+  renderKids();
   showThanks(saved);
 })();
 </script>
