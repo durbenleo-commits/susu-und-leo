@@ -1,0 +1,4 @@
+# Reine HTML-Seite: kein Build, der Ordner wird so veröffentlicht, wie er ist
+[build]
+  publish = "."
+  command = "echo 'Kein Build nötig'"
