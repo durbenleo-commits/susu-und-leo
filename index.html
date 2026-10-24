@@ -498,8 +498,10 @@ const CONFIG = {
     ["18:30", "Abendessen", "gemeinsam an langen Tafeln"],
     ["21:00", "Party", "bis in die Nacht"]
   ],
-  // Jede Antwort geht über FormSubmit (formsubmit.co) als E-Mail an diese Adresse.
-  // Nach der Aktivierung kann hier statt der Adresse der Alias von FormSubmit stehen.
+  // Web-App-URL des Google-Skripts (endet auf /exec). Gesetzt: Das Skript trägt jede
+  // Antwort in die Google-Tabelle ein und verschickt die E-Mails selbst.
+  tabelleUrl: "https://script.google.com/macros/s/AKfycbzsrEmePzz6DgJczl5JV5f9HfbH_nutySR5oxFpr5mI73bFLidzzdKkiv7P5DwTYpyU/exec",
+  // Solange tabelleUrl leer ist: Antworten gehen über FormSubmit (formsubmit.co) als E-Mail an diese Adresse.
   antwortAn: ["durben.leo", "gmail.com"].join("@"),
   // Diese Adressen bekommen jede Antwort zusätzlich als Kopie
   kopieAn: [["suu.ger24", "gmail.com"].join("@")]
@@ -848,7 +850,10 @@ form.addEventListener("submit", async (e) => {
   btn.disabled = true;
   btn.textContent = "Wird gesendet …";
   try {
-    if (!TESTMODUS) {
+    if (!TESTMODUS && CONFIG.tabelleUrl) {
+      // Google Apps Script beantwortet keine CORS-Anfragen, daher no-cors: Die Antwort ist nicht lesbar
+      await fetch(CONFIG.tabelleUrl, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) });
+    } else if (!TESTMODUS) {
       const subject = data.antwort === "Zusage"
         ? `Zusage: ${data.name} (${data.personen} ${data.personen === "1" ? "Person" : "Personen"})`
         : `Absage: ${data.name}`;
