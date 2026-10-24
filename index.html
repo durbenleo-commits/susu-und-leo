@@ -500,7 +500,9 @@ const CONFIG = {
   ],
   // Jede Antwort geht über FormSubmit (formsubmit.co) als E-Mail an diese Adresse.
   // Nach der Aktivierung kann hier statt der Adresse der Alias von FormSubmit stehen.
-  antwortAn: ["durben.leo", "gmail.com"].join("@")
+  antwortAn: ["durben.leo", "gmail.com"].join("@"),
+  // Diese Adressen bekommen jede Antwort zusätzlich als Kopie
+  kopieAn: [["suu.ger24", "gmail.com"].join("@")]
 };
 
 // Lokal geöffnet (Datei oder localhost) wird nichts verschickt.
@@ -701,7 +703,7 @@ window.addEventListener("resize", () => {
 
 /* ---------- Zu- / Absage ---------- */
 // Neuer Name, damit Antworten aus dem früheren Testmodus nicht mehr angezeigt werden
-const STORE_KEY = "hochzeit-rsvp-v2";
+const STORE_KEY = "hochzeit-rsvp-v3";
 const form = $("rsvp");
 const yesFields = $("yesFields");
 const guestsBox = $("guests");
@@ -864,6 +866,7 @@ form.addEventListener("submit", async (e) => {
         Nachricht: data.nachricht || "–"
       };
       if (data.email) mail._replyto = data.email;
+      if (CONFIG.kopieAn.length) mail._cc = CONFIG.kopieAn.join(",");
       const res = await fetch(`https://formsubmit.co/ajax/${CONFIG.antwortAn}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
